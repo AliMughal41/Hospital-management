@@ -194,6 +194,58 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+// Test login with email/password (for development/testing only)
+const testLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required'
+      });
+    }
+
+    // Try to get user by email from Firebase Auth
+    try {
+      const userRecord = await admin.auth().getUserByEmail(email);
+      
+      // In a real app, you'd verify password properly
+      // This is just for testing API endpoints
+      const user = {
+        uid: userRecord.uid,
+        email: userRecord.email,
+        name: userRecord.displayName || userRecord.email?.split('@')[0],
+        emailVerified: userRecord.emailVerified
+      };
+
+      res.json({
+        success: true,
+        message: 'Test login successful',
+        user: user,
+        note: 'This is a test endpoint - password not actually verified'
+      });
+
+    } catch (userError) {
+      if (userError.code === 'auth/user-not-found') {
+        return res.status(401).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+      throw userError;
+    }
+
+  } catch (error) {
+    console.error('Test login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Authentication failed'
+    });
+  }
+};
+
 // Contact administrator
 const contactAdmin = async (req, res) => {
   try {
@@ -259,5 +311,6 @@ module.exports = {
   createUser,
   forgotPassword,
   contactAdmin,
-  deleteUser
+  deleteUser,
+  testLogin
 };

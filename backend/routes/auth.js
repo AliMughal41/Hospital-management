@@ -4,14 +4,15 @@ const {
   login, 
   verifyToken, 
   forgotPassword, 
-  contactAdmin 
+  contactAdmin,
+  testLogin
 } = require('../controllers/authController');
 
 const router = express.Router();
 
 // Public routes (no authentication required)
- // Firebase login/signup
-router.post('/login', login);                 // Custom login with JWT
+router.post('/login', login);                 // Firebase token login
+router.post('/test-login', testLogin);        // Test login with email/password
 router.post('/forgot-password', forgotPassword);
 router.post('/contact-admin', contactAdmin);
 
